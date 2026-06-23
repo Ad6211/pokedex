@@ -29,9 +29,14 @@ async function chargerDetail(nom) {
     const data = await res.json();
 
     const statsHTML = data.stats
-      .map(s => `<p>${s.stat.name} : ${s.base_stat}</p>`)
+      .map(s => `
+      <p>
+      ${s.stat.name}
+      <br>
+      <progress value="${s.base_stat}" max="255"></progress>
+      </p>
+      `)
       .join("");
-
     document.getElementById("detail").innerHTML = `
       <h2>${data.name}</h2>
       <img style="height: 120px;" src="${data.sprites.front_default}" />
@@ -70,7 +75,17 @@ async function chargerPokemonParType(type) {
         const id = p.url.split("/")[6];
         return id <= 151;
       })
-      .map(p => `<button class="pokemon" data-name="${p.name}">${p.name}</button><br>`)
+      .map(p => {
+      const id = p.url.split("/")[6];
+
+      return `
+      <div class="pokemon" data-name="${p.name}">
+          <span class="numero">#${id}</span>
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png">
+          <h3>${p.name}</h3>
+      </div>
+      `;
+      })
       .join("");
 
     document.getElementById("liste").innerHTML = list;
