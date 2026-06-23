@@ -6,7 +6,12 @@ async function chargerListe() {
     const data = await reponse.json();
 
     const list = data.results
-      .map(pokemon => `<button class="pokemon" data-name="${pokemon.name}">${pokemon.name}</button><br>`)
+      .map((pokemon, i) => `
+        <div class="pokemon" data-name="${pokemon.name}">
+        <span class="numero">#${i + 1}</span>
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i+1}.png">
+        <h3>${pokemon.name}</h3>
+        </div>`)
       .join("");
 
     document.getElementById("liste").innerHTML = list;
