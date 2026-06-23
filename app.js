@@ -73,7 +73,7 @@ async function chargerFiltres() {
       fairy: "#D685AD"
     };
     const filters = alltypes.results
-      .map(type => `<button class="filter" data-name="${type.name}" style="background-color: ${couleurs[type.name] || '#ccc'}">
+      .map(type => `<button class="filter" data-name="${type.name}" style="background-color: ${couleurs[type.name] || '#ccc'};">
       ${type.name}
       </button>
       `)
