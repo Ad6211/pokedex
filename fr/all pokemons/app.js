@@ -1,3 +1,25 @@
+// Mapping des noms de types en français
+const typeNamesFR = {
+  normal: "Normal",
+  fire: "Feu",
+  water: "Eau",
+  electric: "Électrik",
+  grass: "Plante",
+  ice: "Glace",
+  fighting: "Combat",
+  poison: "Poison",
+  ground: "Sol",
+  flying: "Vol",
+  psychic: "Psy",
+  bug: "Insecte",
+  rock: "Roche",
+  ghost: "Spectre",
+  dragon: "Dragon",
+  dark: "Ténèbres",
+  steel: "Acier",
+  fairy: "Fée"
+};
+
 // Mapping des stats en français
 const statNamesFR = {
   "hp": "PV",
@@ -30,55 +52,73 @@ const typeColors = {
   fairy: "#D685AD"
 };
 
+const LOT_SIZE = 10;
+
+async function chargerLots(total, offset) {
+  const lot = [];
+  for (let i = offset; i < Math.min(offset + LOT_SIZE, total); i++) {
+    const id = i + 1;
+    try {
+      const pokemonRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      const pokemonData = await pokemonRes.json();
+      const types = pokemonData.types.map(t => t.type.name);
+      const mainType = types[0];
+      const bgColor = typeColors[mainType] || "#ccc";
+      
+      let frenchName = "";
+      try {
+        const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+        if (speciesRes.ok) {
+          const speciesData = await speciesRes.json();
+          const frenchNameObj = speciesData.names.find(n => n.language.name === "fr");
+          if (frenchNameObj) frenchName = frenchNameObj.name;
+        }
+      } catch (e) { /* Ignore */ }
+      
+      // Choisir l'URL du sprite selon l'ID
+      const spriteUrl = id <= 1025
+        ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
+        : pokemonData.sprites.front_default;
+      
+      lot.push(`
+        <div class="pokemon" data-name="${pokemonData.name}" data-types="${types.join(',')}" style="background-color: ${bgColor}">
+        <span class="numero">#${id}</span>
+        <img src="${spriteUrl}">
+        <h3>${frenchName || pokemonData.name}</h3>
+        <div class="types">
+          ${types.map(type => `<span class="type-tag ${type}">${typeNamesFR[type] || type}</span>`).join('')}
+        </div>
+        </div>`);
+    } catch (e) {
+      lot.push(`
+        <div class="pokemon" data-name="pokemon-${id}">
+        <span class="numero">#${id}</span>
+        <h3>#${id}</h3>
+        </div>`);
+    }
+  }
+  return lot;
+}
+
 async function chargerListe() {
   try {
     document.getElementById("liste").innerHTML = "Chargement...";
 
-    const reponse = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+    const reponse = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10000");
     const data = await reponse.json();
-
-    const list = await Promise.all(
-      data.results.map(async (pokemon, i) => {
-        const id = i + 1;
-        try {
-          const [speciesRes, pokemonRes] = await Promise.all([
-            fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`),
-            fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-          ]);
-          
-          const [speciesData, pokemonData] = await Promise.all([
-            speciesRes.json(),
-            pokemonRes.json()
-          ]);
-          
-          const frenchNameObj = speciesData.names.find(n => n.language.name === "fr");
-          const frenchName = frenchNameObj ? frenchNameObj.name : pokemon.name;
-          
-          const types = pokemonData.types.map(t => t.type.name);
-          const mainType = types[0];
-          const bgColor = typeColors[mainType] || "#ccc";
-          
-          return `
-            <div class="pokemon" data-name="${pokemon.name}" data-types="${types.join(',')}" style="background-color: ${bgColor}">
-            <span class="numero">#${id}</span>
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png">
-            <h3>${frenchName}</h3>
-            <div class="types">
-              ${types.map(type => `<span class="type-tag ${type}">${type}</span>`).join('')}
-            </div>
-            </div>`;
-        } catch (e) {
-          return `
-            <div class="pokemon" data-name="${pokemon.name}">
-            <span class="numero">#${id}</span>
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png">
-            <h3>${pokemon.name}</h3>
-            </div>`;
-        }
-      })
-    );
-
-    document.getElementById("liste").innerHTML = list.join("");
+    const total = data.results.length;
+    
+    const list = [];
+    for (let offset = 0; offset < total; offset += LOT_SIZE) {
+      const lot = await chargerLots(total, offset);
+      list.push(...lot);
+      
+      // Mettre à jour la liste progressivement
+      document.getElementById("liste").innerHTML = list.join("");
+      
+      // Petit délai entre les lots
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
 
     chargerFiltres();
 
@@ -188,13 +228,17 @@ async function chargerPokemonParType(type) {
             const mainType = types[0];
             const bgColor = typeColors[mainType] || "#ccc";
 
+            const spriteUrl = id <= 1025
+              ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
+              : pokemonData.sprites.front_default;
+            
             return `
             <div class="pokemon" data-name="${p.name}" data-types="${types.join(',')}" style="background-color: ${bgColor}">
                 <span class="numero">#${id}</span>
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png">
+                <img src="${spriteUrl}">
                 <h3>${frenchName}</h3>
                 <div class="types">
-                  ${types.map(t => `<span class="type-tag ${t}">${t}</span>`).join('')}
+                  ${types.map(t => `<span class="type-tag ${t}">${typeNamesFR[t] || t}</span>`).join('')}
                 </div>
             </div>
             `;
@@ -202,7 +246,6 @@ async function chargerPokemonParType(type) {
             return `
             <div class="pokemon" data-name="${p.name}">
                 <span class="numero">#${id}</span>
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png">
                 <h3>${p.name}</h3>
             </div>
             `;

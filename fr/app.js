@@ -1,3 +1,25 @@
+// Mapping des noms de types en français
+const typeNamesFR = {
+  normal: "Normal",
+  fire: "Feu",
+  water: "Eau",
+  electric: "Électrik",
+  grass: "Plante",
+  ice: "Glace",
+  fighting: "Combat",
+  poison: "Poison",
+  ground: "Sol",
+  flying: "Vol",
+  psychic: "Psy",
+  bug: "Insecte",
+  rock: "Roche",
+  ghost: "Spectre",
+  dragon: "Dragon",
+  dark: "Ténèbres",
+  steel: "Acier",
+  fairy: "Fée"
+};
+
 // Mapping des stats en français
 const statNamesFR = {
   "hp": "PV",
@@ -64,7 +86,7 @@ async function chargerListe() {
             <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png">
             <h3>${frenchName}</h3>
             <div class="types">
-              ${types.map(type => `<span class="type-tag ${type}">${type}</span>`).join('')}
+              ${types.map(type => `<span class="type-tag ${type}">${typeNamesFR[type] || type}</span>`).join('')}
             </div>
             </div>`;
         } catch (e) {
@@ -194,7 +216,7 @@ async function chargerPokemonParType(type) {
                 <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png">
                 <h3>${frenchName}</h3>
                 <div class="types">
-                  ${types.map(t => `<span class="type-tag ${t}">${t}</span>`).join('')}
+                  ${types.map(t => `<span class="type-tag ${t}">${typeNamesFR[t] || t}</span>`).join('')}
                 </div>
             </div>
             `;

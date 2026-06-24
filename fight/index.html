@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex - Combat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png">
+</head>
+<body>
+    <div style="display:flex;">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" style="width:40px; height: 40px; margin-top: 20px;">
+        <h1>Pokédex - Combat</h1>
+    </div> 
+    <div id="filters"></div>
+    <div id="container">
+        <div id="liste"></div>
+        <div id="fightZone">
+            <div id="fight">
+                <div id="detail"><h2>1er Pokémon</h2></div>
+                <div id="detail2"><h2>2e Pokémon</h2></div>
+            </div>
+            <button id="combattez" disabled>⚔️ Combattre</button>
+            <div id="resultatCombat"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
