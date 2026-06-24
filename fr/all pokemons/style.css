@@ -25,6 +25,16 @@ h1{
     cursor:pointer;
 }
 
+.load-more-btn{
+    border:none;
+    border-radius:20px;
+    padding:8px 18px;
+    background:#666;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
 #container{
     display:flex;
     gap:30px;
